@@ -38,4 +38,4 @@ jobs:
       with:
         branch: gh-pages  # The branch to deploy to
         folder: build  # Folder to deploy
-        token: ${{ secrets.GITHUB_TOKEN }}  # GitHub token (provided automatically)
+        token: ${{ secrets.DEPLOY_TOKEN }}  # GitHub token (provided automatically)
