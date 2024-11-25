@@ -14,18 +14,22 @@ const FetchData = ({ cat }) => {
 
     try {
       const response = await axios.get(apiUrl);
-      setData(response.data.articles || []);
-      setFilteredData([]); // Clear filtered data when new data is fetched
+      return response.data.articles || [];
     } catch (error) {
       console.error("Error fetching data:", error);
+      return [];
     }
-  }, [cat]); // Dependencies are correct
+  }, [cat]);
 
   useEffect(() => {
     let mounted = true;
 
     const loadData = async () => {
-      await fetchData();
+      const articles = await fetchData();
+      if (mounted) {
+        setData(articles);
+        setFilteredData([]);
+      }
     };
 
     loadData();
@@ -33,7 +37,7 @@ const FetchData = ({ cat }) => {
     return () => {
       mounted = false;
     };
-  }, [fetchData]); // fetchData is now stable due to useCallback
+  }, [fetchData]);
 
   const handleSearch = (searchTerm) => {
     if (!searchTerm) {
