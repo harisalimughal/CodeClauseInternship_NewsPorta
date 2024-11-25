@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-
 import axios from "axios";
 import { Link } from "react-router-dom";
-import SearchBar from "./SearchBar"; // Import the SearchBar component
+import SearchBar from "./SearchBar";
 
 const FetchData = ({ cat }) => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
 
-  // Memoize fetchData with proper dependencies
   const fetchData = useCallback(async () => {
     const apiUrl = cat
       ? `https://newsapi.org/v2/top-headlines?country=in&category=${cat}&apiKey=d0cb8c771f4d4cc291ac6feaa54024b3`
@@ -21,12 +19,21 @@ const FetchData = ({ cat }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, [cat]); // Add `cat` as a dependency since it's used inside `fetchData`
+  }, [cat]); // Dependencies are correct
 
-  // useEffect depends on the stable fetchData function
   useEffect(() => {
-    fetchData();
-  }, [fetchData]); // ESLint warning resolved here
+    let mounted = true;
+
+    const loadData = async () => {
+      await fetchData();
+    };
+
+    loadData();
+
+    return () => {
+      mounted = false;
+    };
+  }, [fetchData]); // fetchData is now stable due to useCallback
 
   const handleSearch = (searchTerm) => {
     if (!searchTerm) {
@@ -61,7 +68,7 @@ const FetchData = ({ cat }) => {
               }}
             >
               <h5 className="my-2">{items.title}</h5>
-              <div d-flex justify-content-center align-items-center>
+              <div className="d-flex justify-content-center align-items-center">
                 {items.urlToVideo ? (
                   <video
                     controls
