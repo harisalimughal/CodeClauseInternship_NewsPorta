@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
+
 import axios from "axios";
 import { Link } from "react-router-dom";
-import SearchBar from "./SearchBar";
+import SearchBar from "./SearchBar"; // Import the SearchBar component
 
 const FetchData = ({ cat }) => {
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]); // New state for filtered data
+  const [filteredData, setFilteredData] = useState([]);
 
-  // Fetch data function wrapped with useCallback for stable reference in useEffect
+  // Memoize fetchData with proper dependencies
   const fetchData = useCallback(async () => {
     const apiUrl = cat
       ? `https://newsapi.org/v2/top-headlines?country=in&category=${cat}&apiKey=d0cb8c771f4d4cc291ac6feaa54024b3`
@@ -15,22 +16,21 @@ const FetchData = ({ cat }) => {
 
     try {
       const response = await axios.get(apiUrl);
-      setData(response.data.articles || []); // Ensure data is an array
+      setData(response.data.articles || []);
       setFilteredData([]); // Clear filtered data when new data is fetched
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, [cat]);
+  }, [cat]); // Add `cat` as a dependency since it's used inside `fetchData`
 
-  // Fetch data on component mount or when `cat` changes
+  // useEffect depends on the stable fetchData function
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [fetchData]); // ESLint warning resolved here
 
-  // Filter articles based on search term
   const handleSearch = (searchTerm) => {
     if (!searchTerm) {
-      setFilteredData([]); // Reset to original data if search is empty
+      setFilteredData([]);
       return;
     }
     const filteredArticles = data.filter((article) =>
@@ -50,7 +50,7 @@ const FetchData = ({ cat }) => {
         style={{ minHeight: "100vh" }}
       >
         {articlesToDisplay.length > 0 ? (
-          articlesToDisplay.map((item, index) => (
+          articlesToDisplay.map((items, index) => (
             <div
               key={index}
               className="container my-3 p-3"
@@ -60,9 +60,9 @@ const FetchData = ({ cat }) => {
                 borderRadius: "10px",
               }}
             >
-              <h5 className="my-2">{item.title}</h5>
-              <div className="d-flex justify-content-center align-items-center">
-                {item.urlToVideo ? (
+              <h5 className="my-2">{items.title}</h5>
+              <div d-flex justify-content-center align-items-center>
+                {items.urlToVideo ? (
                   <video
                     controls
                     className="img-fluid"
@@ -72,13 +72,13 @@ const FetchData = ({ cat }) => {
                       objectFit: "cover",
                     }}
                   >
-                    <source src={item.urlToVideo} type="video/mp4" />
+                    <source src={items.urlToVideo} type="video/mp4" />
                     Your browser does not support the video tag.
                   </video>
                 ) : (
                   <img
-                    src={item.urlToImage}
-                    alt="Image not found"
+                    src={items.urlToImage}
+                    alt="img not found"
                     className="img-fluid"
                     style={{
                       width: "100%",
@@ -88,9 +88,9 @@ const FetchData = ({ cat }) => {
                   />
                 )}
               </div>
-              <p className="my-1">{item.content}</p>
-              <Link to={item.url} target="_blank" rel="noopener noreferrer">
-                View more
+              <p className="my-1">{items.content}</p>
+              <Link to={items.url} target="blank">
+                view more
               </Link>
             </div>
           ))
