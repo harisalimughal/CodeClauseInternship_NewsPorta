@@ -3,39 +3,40 @@ name: Deploy React App
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main
+  # Also add workflow_dispatch to enable manual triggering
+  workflow_dispatch:
 
 permissions:
-  contents: write  # Provide write permissions to push to the repository
+  contents: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
+    
     steps:
-    # Step 1: Check out the code from your repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Set up Node.js environment
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20.16.0'  # specify the node version you're using
+        node-version: '20.16.0'
+        cache: 'npm' # Add caching for faster installations
 
-    # Step 3: Install dependencies
     - name: Install dependencies
-      run: npm install
-
-    # Step 4: Build the React app
+      run: npm ci # Use ci instead of install for cleaner, more reliable builds
+      
     - name: Build the React app
-      run: |
-        CI=false npm run build
+      env:
+        CI: false # Set as environment variable
+      run: npm run build
 
-    # Step 5: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        branch: gh-pages  # The branch to deploy to
-        folder: build  # Folder to deploy
-        token: ${{ secrets.DEPLOY_TOKEN }}  # GitHub token (provided automatically)
+        branch: gh-pages
+        folder: build
+        clean: true # Add this to clean up old files
+        # You can use GITHUB_TOKEN instead of DEPLOY_TOKEN
+        token: ${{ secrets.GITHUB_TOKEN }}
