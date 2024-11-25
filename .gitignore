@@ -1,0 +1,52 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Cache directories
+.cache/
+.vscode/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+jspm_packages/
+
+# dotenv environment variables file
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.idea/
+*.swp
+*.swo
+*.bak
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
+
+# GitHub Actions
+!.github/
+
+# Coverage reports
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+*.pid
+*.seed
+*.log
+
+# Lerna
+lerna-debug.log*
+
+# MacOS system files
+._*
